@@ -1,36 +1,37 @@
-layui.use(['upload', 'form', 'element', 'layer'], function() {
+layui.use(['form', 'element', 'layer'], function() {
 	var upload = layui.upload;
 	var form = layui.form;
 	var element = layui.element;
 	var layer = layui.layer;
-
-	var uploadInst = upload.render({
-		elem: '#upimg' //绑定元素
-		//选择的时候触发
-		,
-		choose: function(obj) { //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
-			obj.preview(function(index, file, result) {
-				layer.load();
-				$.ajax({
-					url: uploadurl,
-					data: result.split("base64,")[1],
-					type: 'post',
-					processData: false,
-					contentType: false,
-					dataType: 'json',
-					success: function(data) {
-						handleres(data);
-					},
-					error: function(xOptions, textStatus) {
-						return;
-					}
-
-				});
-			});
-		}
-	});
 });
+function uploadFile() {
+      var file    = document.querySelector('input[type=file]').files[0];
+      var reader  = new FileReader();
+    
+      reader.addEventListener("load", function () {
+        layer.load();
+        $.ajax({
+			url: uploadurl,
+			data: reader.result.split("base64,")[1],
+			type: 'post',
+			processData: false,
+			contentType: false,
+			dataType: 'json',
+			success: function(data) {
+				handleres(data);
+			},
+			error: function(xOptions, textStatus) {
+				return;
+			}
 
+		});
+      }, false);
+    
+      if (file) {
+        reader.readAsDataURL(file);
+        
+      }
+}
 function handleres(res, index) {
 	layui.use('layer', function() {
 		var layer = layui.layer;
